@@ -78,7 +78,6 @@ const Home = memo(() => {
 
   const  onClose = () => {
     setShowMyNewsPieChart(false)
-    console.log('关闭了');
   }
 
   return (
