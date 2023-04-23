@@ -43,9 +43,16 @@ const Home = memo(() => {
           data: ['数量']
         },
         xAxis: {
-          data: Object.keys(data)
+          data: Object.keys(data),
+          axisLabel:{
+            rotate: '45',
+            interval: 0
+          }
         },
-        yAxis: {},
+        yAxis: {
+          // y轴最小间隔
+          minInterval:1
+        },
         series: [
           {
             name: '数量',
@@ -56,7 +63,16 @@ const Home = memo(() => {
       };
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option);
+
+      // 绑定随窗口的变化而变化
+      window.onresize = () => {
+        myChart.resize()
+      }
     })
+    // 解绑监听window变化事件
+    return () => {
+      window.onresize = null
+    }
   }, [barNode])
 
   return (
@@ -97,7 +113,7 @@ const Home = memo(() => {
       </Row>
 
       {/* 可视化图 */}
-      <div ref={barNode} style={{width: "100%", height: "400px"}}></div>
+      <div ref={barNode} style={{ height: "400px"}}></div>
     </div>
   )
 })
