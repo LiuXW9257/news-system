@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import {Avatar, Card, Col, Row } from 'antd'
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons'
+import {Avatar, Card, Col, Row, Drawer } from 'antd'
+import { EditOutlined, EllipsisOutlined, PieChartOutlined } from '@ant-design/icons'
 import * as echarts from 'echarts'
 import _ from 'lodash'
 import MyCard from '@/components/home/my-card'
@@ -13,6 +13,7 @@ const Home = memo(() => {
   const [mostViewNewsList, setMostViewNewsList] = useState([])
   const { adminInfo } = useSelector(state => state.adminPersonalCenter)
   const [mostStarNewsList, setMostStarNewsList] = useState([])
+  const [showMyNewsPieChart, setShowMyNewsPieChart] = useState(false)
   const barNode = useRef()
 
   useEffect(() => {
@@ -75,6 +76,11 @@ const Home = memo(() => {
     }
   }, [barNode])
 
+  const  onClose = () => {
+    setShowMyNewsPieChart(false)
+    console.log('关闭了');
+  }
+
   return (
     <div className="site-card-wrapper">
       <Row gutter={16}>
@@ -93,7 +99,7 @@ const Home = memo(() => {
             />
           }
           actions={[
-            <SettingOutlined key="setting" />,
+            <PieChartOutlined key="setting" onClick={()=>{setShowMyNewsPieChart(true)}} />,
             <EditOutlined key="edit" />,
             <EllipsisOutlined key="ellipsis" />,
           ]}
@@ -112,8 +118,15 @@ const Home = memo(() => {
         </Col>
       </Row>
 
+      {/* 个人数据抽屉 */}
+      <Drawer title="my news" placement="right" onClose={onClose} open={showMyNewsPieChart}>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Drawer>
+
       {/* 可视化图 */}
-      <div ref={barNode} style={{ height: "400px"}}></div>
+      <div ref={barNode} style={{marginTop:'60px', height: "400px"}}></div>
     </div>
   )
 })
