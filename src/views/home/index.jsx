@@ -18,6 +18,7 @@ const Home = memo(() => {
   const { adminInfo } = useSelector(state => state.adminPersonalCenter)
   const [mostStarNewsList, setMostStarNewsList] = useState([])
   const [showMyNewsPieChart, setShowMyNewsPieChart] = useState(false)
+
   const barChartNode = useRef()
   const pieChartNode = useRef()
 
@@ -34,14 +35,17 @@ const Home = memo(() => {
   }, [])
 
   useEffect(() => {
+    console.log(barChart);
     // 渲染柱状图
     renderBarChart()
     // 绑定随窗口的变化而变化
     window.onresize = () => {
+      
       barChart.resize()
     }
     // 解绑监听window变化事件
     return () => {
+      barChart = null
       window.onresize = null
     }
   }, [])
@@ -51,6 +55,9 @@ const Home = memo(() => {
     // 渲染饼状图
     // FIXME 这里使用传参的方式，将 username 传过去，避免在函数中直接使用，需要将函数放入依赖项中
     renderPieChart(adminInfo.username)
+    return () => {
+      pieChart = null
+    }
   }, [showMyNewsPieChart, adminInfo])
 
   const  onClose = () => {
@@ -98,46 +105,46 @@ const Home = memo(() => {
       barChart.setOption(option);
   }
 
-    // 渲染饼状图
-    const renderPieChart = async(username) => {
-      if (!pieChart) {
-        pieChart = echarts.init(pieChartNode.current);
-      }
-      let data = await getPersonalNewsWithCategory(username).then(res => {
-        return res.data
-      })
-      data = _.groupBy(data, item=>item.category.title)
-      const names = Object.keys(data)
-      data = names.map(item => ({
-        value: data[item].length,
-        name: item
-      }))
-      const option = {
-        // 如果数据为 0 不显示
-        stillShowZeroSum: false,
-        title: {
-          text: 'news-system 个人发布数据',
-          subtext: 'Fake Data',
-          left: 'center'
-        },
-        // hover 时 有标签显示
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'left'
-        },
-        series: [
-          {
-            type: 'pie',
-            data: data,
-            radius: '50%'
-          }
-        ]
-      };
-      pieChart.setOption(option);
+  // 渲染饼状图
+  const renderPieChart = async(username) => {
+    if (!pieChart) {
+      pieChart = echarts.init(pieChartNode.current);
     }
+    let data = await getPersonalNewsWithCategory(username).then(res => {
+      return res.data
+    })
+    data = _.groupBy(data, item=>item.category.title)
+    const names = Object.keys(data)
+    data = names.map(item => ({
+      value: data[item].length,
+      name: item
+    }))
+    const option = {
+      // 如果数据为 0 不显示
+      stillShowZeroSum: false,
+      title: {
+        text: 'news-system 个人发布数据',
+        subtext: 'Fake Data',
+        left: 'center'
+      },
+      // hover 时 有标签显示
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left'
+      },
+      series: [
+        {
+          type: 'pie',
+          data: data,
+          radius: '50%'
+        }
+      ]
+    };
+    pieChart.setOption(option);
+  }
 
 
   return (
@@ -184,7 +191,7 @@ const Home = memo(() => {
       </Drawer>
 
       {/* 柱状图 */}
-      <div ref={barChartNode} style={{marginTop:'60px', height: "400px"}}></div>
+      <div ref={barChartNode} style={{marginTop:'60px', height: "400px", width: '100%'}}></div>
     </div>
   )
 })
