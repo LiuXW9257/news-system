@@ -13,6 +13,7 @@ const NewsPreview = memo(() => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    console.log(location);
     const {newsId, isAudit} = location.state
     getNewsDetail(newsId).then(res => {
       setNewsDetail(res.data)
