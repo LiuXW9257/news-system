@@ -83,3 +83,8 @@ export function getNewsDetail(id){
 export function updateNews(newsId, news){
   return req.patch(`/news/${newsId}`, news)
 }
+
+// 获取所有news 及其分类信息
+export function getNewsWithCategory(){
+  return req.get(`/news?publishState=2&_expand=category`)
+}
