@@ -3,11 +3,13 @@ import {Avatar, Card, Col, Row } from 'antd';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
 import MyCard from '@/components/home/my-card';
 import { getMostSatrNews, getMostViewNews } from '@/services/modules/home';
+import { useSelector } from 'react-redux';
 const { Meta } = Card;
 
 const Home = memo(() => {
 
   const [mostViewNewsList, setMostViewNewsList] = useState([])
+  const { adminInfo } = useSelector(state => state.adminPersonalCenter)
   const [mostStarNewsList, setMostStarNewsList] = useState([])
 
   useEffect(() => {
@@ -18,7 +20,6 @@ const Home = memo(() => {
 
   useEffect(() => {
     getMostSatrNews().then(res => {
-      console.log(res);
       setMostStarNewsList(res.data)
     })
   }, [])
@@ -49,8 +50,13 @@ const Home = memo(() => {
       >
         <Meta
           avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-          title="Card title"
-          description="This is the description"
+          title={adminInfo.username}
+          description={
+            <div>
+              <b>{adminInfo.region?adminInfo.region:"全球"}</b>&nbsp;&nbsp;
+              <span>{adminInfo.role.roleName}</span>
+            </div>
+          }
         />
       </Card>
       </Col>

@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Form, Input, message } from 'antd'
 import style from './index.module.less'
-import { userLogin } from '@/services'
+import { getUserDetailInfo, userLogin } from '@/services'
 const Login = memo(() => {
 
   const navigate = useNavigate() 
@@ -13,12 +13,14 @@ const Login = memo(() => {
     if (res.data.length) {
       // 登陆成功
       message.success('登陆成功');
-      navigate('/home')
-      // 记录用户信息
-      const adminInfo = res.data[0]
-      const token = JSON.stringify(adminInfo)
-      // 放入localStorage中
-      localStorage.setItem('token', token)
+      getUserDetailInfo(userInfo.username).then(res => {
+        // 记录用户信息
+        const adminInfo = res.data[0]
+        const token = JSON.stringify(adminInfo)
+        // 放入localStorage中
+        localStorage.setItem('token', token)
+        navigate('/home')
+        })
     }else{
       message.warning('账号或密码错误...');
     }
