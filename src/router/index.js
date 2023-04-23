@@ -20,7 +20,6 @@ const RightList = lazy(() => import('@/views/right-manage/right'))
 const RoleList = lazy(() => import('@/views/right-manage/role'))
 
 // 新闻管理
-const NewsAdd = lazy(() => import('@/views/news-manage/add'))
 const NewsDraft = lazy(() => import('@/views/news-manage/draft'))
 const NewsCategory = lazy(() => import('@/views/news-manage/category'))
 const NewsPreview = lazy(() => import('@/views/news-manage/preview'))

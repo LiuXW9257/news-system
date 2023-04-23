@@ -88,3 +88,8 @@ export function updateNews(newsId, news){
 export function getNewsWithCategory(){
   return req.get(`/news?publishState=2&_expand=category`)
 }
+
+// 获取个人已发布新闻 分类信息
+export function getPersonalNewsWithCategory(username){
+  return req.get(`/news?publishState=2&author=${username}&_expand=category`)
+}
