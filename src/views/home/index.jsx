@@ -9,15 +9,12 @@ import { getMostSatrNews, getMostViewNews } from '@/services/modules/home'
 import { getNewsWithCategory, getPersonalNewsWithCategory } from '@/services'
 const { Meta } = Card;
 
-
-let barChart = null
-let pieChart = null
-
 const Home = memo(() => {
   const [mostViewNewsList, setMostViewNewsList] = useState([])
   const { adminInfo } = useSelector(state => state.adminPersonalCenter)
   const [mostStarNewsList, setMostStarNewsList] = useState([])
   const [showMyNewsPieChart, setShowMyNewsPieChart] = useState(false)
+  const [pieChart, setPieChart] = useState(null)
 
   const barChartNode = useRef()
   const pieChartNode = useRef()
@@ -35,43 +32,23 @@ const Home = memo(() => {
   }, [])
 
   useEffect(() => {
-    console.log(barChart);
-    // 渲染柱状图
-    renderBarChart()
-    // 绑定随窗口的变化而变化
-    window.onresize = () => {
-      
-      barChart.resize()
-    }
+    getNewsWithCategory().then(res => {
+      // 渲染柱状图
+    renderBarChart(res.data)
+    })
     // 解绑监听window变化事件
     return () => {
-      barChart = null
       window.onresize = null
     }
   }, [])
-
-  useEffect(() => {
-    if (!showMyNewsPieChart)return
-    // 渲染饼状图
-    // FIXME 这里使用传参的方式，将 username 传过去，避免在函数中直接使用，需要将函数放入依赖项中
-    renderPieChart(adminInfo.username)
-    return () => {
-      pieChart = null
-    }
-  }, [showMyNewsPieChart, adminInfo])
 
   const  onClose = () => {
     setShowMyNewsPieChart(false)
   }
 
   // 渲染柱状图的方法
-  const renderBarChart = async() => {
-    if (!barChart) {
-      barChart = echarts.init(barChartNode.current);
-    }
-    let data = await getNewsWithCategory().then(res => {
-      return res.data
-    })
+  const renderBarChart = async(data) => {
+    let  chart = echarts.init(barChartNode.current);
     data = _.groupBy(data, item=>item.category.title)
       // 指定图表的配置项和数据
       const option = {
@@ -101,15 +78,29 @@ const Home = memo(() => {
           }
         ]
       };
-      // 使用刚指定的配置项和数据显示图表。
-      barChart.setOption(option);
+    // 使用刚指定的配置项和数据显示图表。
+    chart.setOption(option);
+
+      // 绑定随窗口的变化而变化
+    window.onresize = () => {
+      chart.resize()
+    }
   }
 
   // 渲染饼状图
-  const renderPieChart = async(username) => {
-    if (!pieChart) {
-      pieChart = echarts.init(pieChartNode.current);
-    }
+  const renderPieChart = async() => {
+    setShowMyNewsPieChart(true);
+    const { username } = adminInfo
+    let chart
+    setTimeout(() => {
+      if (!pieChart) {
+        chart = echarts.init(pieChartNode.current)
+        // FIXME 设置是异步的，所以这里需要先将值给chart，后边才能setOption
+        setPieChart(chart)
+      }else{
+        chart = pieChart
+      }
+    }, 0);
     let data = await getPersonalNewsWithCategory(username).then(res => {
       return res.data
     })
@@ -143,7 +134,7 @@ const Home = memo(() => {
         }
       ]
     };
-    pieChart.setOption(option);
+    chart.setOption(option);
   }
 
 
@@ -165,7 +156,7 @@ const Home = memo(() => {
             />
           }
           actions={[
-            <PieChartOutlined key="setting" onClick={()=>{setShowMyNewsPieChart(true)}} />,
+            <PieChartOutlined key="setting" onClick={renderPieChart} />,
             <EditOutlined key="edit" />,
             <EllipsisOutlined key="ellipsis" />,
           ]}

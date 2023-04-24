@@ -34,6 +34,9 @@ const Sunset = lazy(() => import('@/views/publish-manage/sunset'))
 const Published = lazy(() => import('@/views/publish-manage/published'))
 const Unpublished = lazy(() => import('@/views/publish-manage/unpublished'))
 
+// 游客系统
+const NewsList = lazy(() => import('@/views/news/list'))
+const NewsDetail = lazy(() => import('@/views/news/detail'))
 
 // 路由懒加载需要 <Suspense>
 const pageLazyLoad = (Page) => {
@@ -178,6 +181,19 @@ const routes = [
   {
     path: '/login',
     element: <Login />
+  },
+  {
+    path: '/news',
+    children:[
+      {
+        path: 'list',
+        element: pageLazyLoad(NewsList)
+      },
+      {
+        path: 'detail',
+        element: pageLazyLoad(NewsDetail)
+      }
+    ]
   },
   {
     path:'/error',
