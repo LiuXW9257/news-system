@@ -93,3 +93,17 @@ export function getNewsWithCategory(){
 export function getPersonalNewsWithCategory(username){
   return req.get(`/news?publishState=2&author=${username}&_expand=category`)
 }
+
+// 浏览量+1
+export function newsViewAdd(id, view){
+  return req.patch(`/news/${id}`, {
+    view,
+  })
+}
+
+// 点赞
+export function giveLike2News(id, star){
+  return req.patch(`/news/${id}`, {
+    star: star
+  })
+}

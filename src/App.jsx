@@ -12,6 +12,10 @@ const App = memo(() => {
 
   useEffect(() => {
     // 判断路由
+    if (pathname === '/') {
+      navigate(`/news/list`)
+      return
+    }
     const route = checkRouteAuth(pathname)
     // 地址是否存在
     if (!route) {
